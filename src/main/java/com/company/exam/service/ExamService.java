@@ -51,4 +51,19 @@ public class ExamService {
                 .orElseThrow(() -> new NotFoundException("Not found exam by id: " + id));
         return examDetailsMapper.toDto(exam.getExamDetails());
     }
+
+    public void updateExam(Integer examId, ExamDetailsInfo request) {
+        Exam exam = examRepository.findById(examId)
+                .orElseThrow(() -> new NotFoundException("Not found exam by id: " + examId));
+        ExamDetails examDetails = exam.getExamDetails();
+
+        examDetails.setGroup(examGroupService.findByNameOrAddIfNotExist(request.getGroupName()));
+        examDetails.setExamName(request.getExamName());
+        examDetails.setDuration(request.getDuration());
+        examDetails.setQuestionCount(request.getQuestionCount());
+
+        exam.setExamDetails(examDetailsRepository.save(examDetails));
+        exam.setUpdatedDate(LocalDate.now());
+        examRepository.save(exam);
+    }
 }

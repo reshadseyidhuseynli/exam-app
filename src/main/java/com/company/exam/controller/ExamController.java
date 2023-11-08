@@ -21,4 +21,10 @@ public class ExamController {
     public ExamDetailsInfo getById(@PathVariable Integer id) {
         return examService.getById(id);
     }
+
+    @PutMapping("/{id}")
+    public void updateExam(@PathVariable Integer id,
+                           @RequestBody ExamDetailsInfo examDetails) {
+        examService.updateExam(id, examDetails);
+    }
 }
