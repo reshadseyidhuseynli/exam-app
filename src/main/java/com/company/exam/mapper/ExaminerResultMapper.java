@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ExaminerResultMapper {
 
-    @Mapping(target = "examName", expression = "java(examinerResult.getExam().getName())")
+    @Mapping(target = "examName", expression = "java(examinerResult.getExam().getExamDetails().getExamName())")
     ExaminerResultInfo toDto(ExaminerResult examinerResult);
 
     List<ExaminerResultInfo> toDtoList(List<ExaminerResult> examinerResults);

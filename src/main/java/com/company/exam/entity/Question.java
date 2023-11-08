@@ -26,5 +26,5 @@ public class Question {
     private String title;
 
     @OneToMany(mappedBy = "id")
-    private List<QuestionOption> questionOptions;
+    private List<QuestionOption> options;
 }

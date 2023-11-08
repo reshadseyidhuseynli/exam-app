@@ -1,6 +1,7 @@
 package com.company.exam.controller;
 
 import com.company.exam.dto.QuestionInfo;
+import com.company.exam.dto.QuestionRequest;
 import com.company.exam.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -13,13 +14,13 @@ public class QuestionController {
     private final QuestionService questionService;
 
     @PostMapping
-    public void addQuestion(@RequestBody QuestionInfo question) {
+    public void addQuestion(@RequestBody QuestionRequest question) {
         questionService.addQuestion(question);
     }
 
     @PutMapping("/{id}")
     public void updateQuestion(@PathVariable Integer id,
-                               @RequestBody QuestionInfo question) {
+                               @RequestBody QuestionRequest question) {
         questionService.updateQuestion(id, question);
     }
 

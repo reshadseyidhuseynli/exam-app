@@ -1,9 +1,12 @@
 package com.company.exam.controller;
 
 import com.company.exam.dto.ExamDetailsInfo;
+import com.company.exam.dto.QuestionInfo;
 import com.company.exam.service.ExamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/exam")
@@ -20,6 +23,11 @@ public class ExamController {
     @GetMapping("/{id}/details")
     public ExamDetailsInfo getById(@PathVariable Integer id) {
         return examService.getById(id);
+    }
+
+    @GetMapping("/{id}/questions")
+    public List<QuestionInfo> getQuestionsByExamId(@PathVariable Integer id) {
+        return examService.getQuestionsByExamId(id);
     }
 
     @PutMapping("/{id}")

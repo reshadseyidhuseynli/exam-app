@@ -1,6 +1,7 @@
 package com.company.exam.service;
 
 import com.company.exam.dto.ExamDetailsInfo;
+import com.company.exam.dto.QuestionInfo;
 import com.company.exam.entity.Exam;
 import com.company.exam.entity.ExamDetails;
 import com.company.exam.entity.ExamGroup;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +23,7 @@ public class ExamService {
     private final ExamDetailsRepository examDetailsRepository;
     private final ExamDetailsMapper examDetailsMapper;
     private final ExamGroupService examGroupService;
+    private final QuestionService questionService;
 
     public void addExam(ExamDetailsInfo request) {
         ExamGroup examGroup = examGroupService.findByNameOrAddIfNotExist(request.getGroupName());
@@ -73,5 +76,9 @@ public class ExamService {
         Integer examDetailsId = exam.getExamDetails().getId();
         examRepository.deleteById(id);
         examDetailsRepository.deleteById(examDetailsId);
+    }
+
+    public List<QuestionInfo> getQuestionsByExamId(Integer examId) {
+        return questionService.getQuestionsByExamId(examId);
     }
 }

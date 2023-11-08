@@ -2,10 +2,13 @@ package com.company.exam.service;
 
 import com.company.exam.dto.OptionInfo;
 import com.company.exam.dto.QuestionInfo;
+import com.company.exam.dto.QuestionRequest;
 import com.company.exam.entity.Exam;
 import com.company.exam.entity.Question;
 import com.company.exam.entity.QuestionOption;
 import com.company.exam.error.exception.NotFoundException;
+import com.company.exam.mapper.OptionMapper;
+import com.company.exam.mapper.QuestionMapper;
 import com.company.exam.repository.ExamRepository;
 import com.company.exam.repository.QuestionOptionRepository;
 import com.company.exam.repository.QuestionRepository;
@@ -13,17 +16,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class QuestionService {
 
     private final QuestionRepository questionRepository;
+    private final QuestionMapper questionMapper;
     private final QuestionOptionRepository questionOptionRepository;
+    private final OptionMapper optionMapper;
     private final ExamRepository examRepository;
 
-    public void addQuestion(QuestionInfo request) {
+    public void addQuestion(QuestionRequest request) {
         Exam exam = examRepository.findById(request.getExamId())
                 .orElseThrow(() -> new NotFoundException("Not found exam by id: " + request.getExamId()));
 
@@ -33,17 +37,15 @@ public class QuestionService {
                 .build();
         Question savedQuestion = questionRepository.save(question);
 
-        request.getOptions().forEach(optionInfo -> {
-            QuestionOption questionOption = QuestionOption.builder()
-                    .question(savedQuestion)
-                    .optionText(optionInfo.getOptionText())
-                    .isRightAnswer(optionInfo.isRightAnswer())
-                    .build();
-            questionOptionRepository.save(questionOption);
-        });
+        List<OptionInfo> optionInfos = request.getOptions();
+        optionInfos.forEach(optionInfo -> {
+                    QuestionOption questionOption = optionMapper.toEntity(optionInfo);
+                    questionOption.setQuestion(savedQuestion);
+                    questionOptionRepository.save(questionOption);
+                });
     }
 
-    public void updateQuestion(Integer id, QuestionInfo request) {
+    public void updateQuestion(Integer id, QuestionRequest request) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Not found question by id: " + id));
         Exam exam = examRepository.findById(request.getExamId())
@@ -54,7 +56,7 @@ public class QuestionService {
 
         questionRepository.save(question);
 
-        List<QuestionOption> options = question.getQuestionOptions();
+        List<QuestionOption> options = question.getOptions();
         List<OptionInfo> optionInfos = request.getOptions();
 
         for (int i = 0; i <= options.size() - 1; i++) {
@@ -71,29 +73,20 @@ public class QuestionService {
     public QuestionInfo getQuestionById(Integer id) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Not found question by id: " + id));
-        List<QuestionOption> questionOptions = question.getQuestionOptions();
+        return questionMapper.toDto(question);
+    }
 
-        List<OptionInfo> optionInfos = questionOptions.stream()
-                .map(questionOption -> {
-                    OptionInfo optionInfo = new OptionInfo();
-                    optionInfo.setOptionText(questionOption.getOptionText());
-                    optionInfo.setRightAnswer(questionOption.isRightAnswer());
-                    return optionInfo;
-                })
-                .collect(Collectors.toList());
-
-        QuestionInfo questionInfo = new QuestionInfo();
-        questionInfo.setExamId(question.getExam().getId());
-        questionInfo.setTitle(question.getTitle());
-        questionInfo.setOptions(optionInfos);
-
-        return questionInfo;
+    public List<QuestionInfo> getQuestionsByExamId(Integer examId) {
+        Exam exam = examRepository.findById(examId)
+                .orElseThrow(() -> new NotFoundException("Not found exam by id: " + examId));
+        List<Question> questions = exam.getQuestions();
+        return questionMapper.toDtoList(questions);
     }
 
     public void deleteQuestion(Integer id) {
         List<QuestionOption> questionOptions = questionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Not found question by id: " + id))
-                .getQuestionOptions();
+                .getOptions();
         questionOptionRepository.deleteAll(questionOptions);
         questionRepository.deleteById(id);
     }

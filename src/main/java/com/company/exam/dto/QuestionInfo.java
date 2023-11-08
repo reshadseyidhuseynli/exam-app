@@ -7,7 +7,7 @@ import java.util.List;
 @Data
 public class QuestionInfo {
 
-    private Integer examId;
+    private String examName;
     private String title;
     private List<OptionInfo> options;
 
