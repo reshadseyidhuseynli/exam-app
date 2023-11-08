@@ -54,11 +54,10 @@ public class QuestionService {
 
         questionRepository.save(question);
 
-        List<QuestionOption> options = questionOptionRepository.findByQuestion(question)
-                .orElseThrow(() -> new NotFoundException("Not found question option by question id: " + question.getId()));
+        List<QuestionOption> options = question.getQuestionOptions();
         List<OptionInfo> optionInfos = request.getOptions();
 
-        for (int i = 0; i <= options.size()-1; i++) {
+        for (int i = 0; i <= options.size() - 1; i++) {
             QuestionOption questionOption = options.get(i);
             OptionInfo optionInfo = optionInfos.get(i);
 
@@ -72,8 +71,7 @@ public class QuestionService {
     public QuestionInfo getQuestionById(Integer id) {
         Question question = questionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Not found question by id: " + id));
-        List<QuestionOption> questionOptions = questionOptionRepository.findByQuestion(question)
-                .orElseThrow(() -> new NotFoundException("Not found question option by question id: " + question.getId()));
+        List<QuestionOption> questionOptions = question.getQuestionOptions();
 
         List<OptionInfo> optionInfos = questionOptions.stream()
                 .map(questionOption -> {
@@ -93,10 +91,9 @@ public class QuestionService {
     }
 
     public void deleteQuestion(Integer id) {
-        Question question = questionRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Not found question by id: " + id));
-        List<QuestionOption> questionOptions = questionOptionRepository.findByQuestion(question)
-                .orElseThrow(() -> new NotFoundException("Not found question option by question id: " + question.getId()));
+        List<QuestionOption> questionOptions = questionRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Not found question by id: " + id))
+                .getQuestionOptions();
         questionOptionRepository.deleteAll(questionOptions);
         questionRepository.deleteById(id);
     }
