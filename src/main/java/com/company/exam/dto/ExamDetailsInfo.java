@@ -1,9 +1,9 @@
-package com.company.exam.dto.request;
+package com.company.exam.dto;
 
 import lombok.Data;
 
 @Data
-public class NewExamDetails {
+public class ExamDetailsInfo {
 
     private String groupName;
     private String examName;
