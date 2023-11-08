@@ -66,4 +66,12 @@ public class ExamService {
         exam.setUpdatedDate(LocalDate.now());
         examRepository.save(exam);
     }
+
+    public void deleteById(Integer id) {
+        Exam exam = examRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Not found exam by id: " + id));
+        Integer examDetailsId = exam.getExamDetails().getId();
+        examRepository.deleteById(id);
+        examDetailsRepository.deleteById(examDetailsId);
+    }
 }

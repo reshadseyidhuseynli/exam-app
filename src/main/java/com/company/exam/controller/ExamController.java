@@ -17,7 +17,7 @@ public class ExamController {
         examService.addExam(examDetails);
     }
 
-    @GetMapping("{id}/details")
+    @GetMapping("/{id}/details")
     public ExamDetailsInfo getById(@PathVariable Integer id) {
         return examService.getById(id);
     }
@@ -26,5 +26,10 @@ public class ExamController {
     public void updateExam(@PathVariable Integer id,
                            @RequestBody ExamDetailsInfo examDetails) {
         examService.updateExam(id, examDetails);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable Integer id) {
+        examService.deleteById(id);
     }
 }
