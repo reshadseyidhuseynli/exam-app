@@ -12,10 +12,11 @@ public class ExamDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @ManyToOne
+    @JoinColumn(name = "group_id")
+    private ExamGroup group;
     @Column(name = "name")
     private String name;
-    @Column(name = "group")
-    private String group;
     @Column(name = "duration")
     private String duration;
     @Column(name = "question_count")
