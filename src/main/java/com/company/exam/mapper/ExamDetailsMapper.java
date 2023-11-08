@@ -9,6 +9,6 @@ import org.mapstruct.MappingConstants;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface ExamDetailsMapper {
 
-    @Mapping(target = "groupName", expression = "java(setGroupName(examDetails.getGroup().getName()))")
+    @Mapping(target = "groupName", expression = "java(examDetails.getGroup().getName())")
     ExamDetailsInfo toDto(ExamDetails examDetails);
 }

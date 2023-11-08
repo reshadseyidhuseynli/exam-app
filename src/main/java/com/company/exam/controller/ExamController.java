@@ -13,7 +13,7 @@ public class ExamController {
     private final ExamService examService;
 
     @PostMapping
-    public void addExam(ExamDetailsInfo examDetails) {
+    public void addExam(@RequestBody ExamDetailsInfo examDetails) {
         examService.addExam(examDetails);
     }
 

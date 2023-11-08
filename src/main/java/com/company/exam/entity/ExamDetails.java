@@ -21,8 +21,8 @@ public class ExamDetails {
     @ManyToOne
     @JoinColumn(name = "group_id")
     private ExamGroup group;
-    @Column(name = "name")
-    private String name;
+    @Column(name = "exam_name")
+    private String examName;
     @Column(name = "duration")
     private String duration;
     @Column(name = "question_count")

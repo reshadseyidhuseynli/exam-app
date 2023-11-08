@@ -6,10 +6,10 @@ import com.company.exam.entity.ExamDetails;
 import com.company.exam.entity.ExamGroup;
 import com.company.exam.error.exception.NotFoundException;
 import com.company.exam.mapper.ExamDetailsMapper;
+import com.company.exam.repository.ExamDetailsRepository;
 import com.company.exam.repository.ExamRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
 
@@ -18,8 +18,9 @@ import java.time.LocalDate;
 public class ExamService {
 
     private final ExamRepository examRepository;
-    private final ExamGroupService examGroupService;
+    private final ExamDetailsRepository examDetailsRepository;
     private final ExamDetailsMapper examDetailsMapper;
+    private final ExamGroupService examGroupService;
 
     public void addExam(ExamDetailsInfo request) {
         ExamGroup examGroup = examGroupService.findByNameOrAddIfNotExist(request.getGroupName());
@@ -29,10 +30,12 @@ public class ExamService {
 
         ExamDetails examDetails = ExamDetails.builder()
                 .group(examGroup)
-                .name(examName)
+                .examName(examName)
                 .duration(duration)
                 .questionCount(questionCount)
                 .build();
+
+        examDetailsRepository.save(examDetails);
 
         Exam exam = Exam.builder()
                 .examDetails(examDetails)
