@@ -7,12 +7,13 @@ import javax.persistence.*;
 @Data
 @Entity
 @Table(name = "exam_group")
-public class ExamGroup {
+public class ExamGroupEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    @Column(name = "name")
+    private Long id;
+
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 
 }

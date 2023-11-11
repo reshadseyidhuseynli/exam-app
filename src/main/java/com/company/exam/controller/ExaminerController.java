@@ -1,35 +1,40 @@
 package com.company.exam.controller;
 
-import com.company.exam.dto.ExaminerInfo;
-import com.company.exam.dto.ExaminerResultInfo;
+import com.company.exam.dto.request.AnswerRequestDto;
+import com.company.exam.dto.request.CreateExaminerRequestDto;
+import com.company.exam.dto.request.EnterRequestDto;
+import com.company.exam.dto.response.QuestionResponseDto;
+import com.company.exam.dto.response.ResultResponseDto;
 import com.company.exam.service.ExaminerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("examiner")
+@RequestMapping("exams")
 @RequiredArgsConstructor
 public class ExaminerController {
 
     private final ExaminerService examinerService;
 
-    @GetMapping("/{pin}")
-    public ExaminerInfo getExaminerByPin(@PathVariable String pin) {
-        return examinerService.getExaminerByPin(pin);
+    @PostMapping("register")
+    public void add(@RequestBody CreateExaminerRequestDto requestDto) {
+        examinerService.add(requestDto);
     }
 
-    @GetMapping("/{pin}/results")
-    public List<ExaminerResultInfo> getExaminerResultsByPin(@PathVariable String pin) {
-        return examinerService.getExaminerResultsByPin(pin);
+    @PostMapping("/enter")
+    public void enter(@RequestBody EnterRequestDto requestDto) {
+        examinerService.enter(requestDto);
     }
 
-    @GetMapping("/result/{id}")
-    public ExaminerResultInfo getExaminerResultsByPin(@PathVariable Integer id) {
-        return examinerService.getExaminerResultById(id);
+    @PostMapping("/{title}/start")
+    public QuestionResponseDto start(@PathVariable("title") String title,
+                                     @RequestBody EnterRequestDto requestDto) {
+        return examinerService.startExam(title, requestDto);
     }
+
+    @PostMapping("/finish")
+    public ResultResponseDto finish(@RequestBody AnswerRequestDto requestDto) {
+        return examinerService.finishExam(requestDto);
+    }
+
 }

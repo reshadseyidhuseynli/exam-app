@@ -13,17 +13,23 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "question_option")
-public class QuestionOption {
+public class OptionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
+
+    @Column(name = "number", nullable = false)
+    private Integer number;
+
+    @Column(name = "option_text", nullable = false)
+    private String text;
+
+    @Column(name = "right_answer", nullable = false)
+    private boolean isRightAnswer;
+
     @ManyToOne
     @JoinColumn(name = "question_id", referencedColumnName = "id")
-    private Question question;
-    @Column(name = "option_text")
-    private String optionText;
-    @Column(name = "right_answer")
-    private boolean isRightAnswer;
+    private QuestionEntity question;
 
 }

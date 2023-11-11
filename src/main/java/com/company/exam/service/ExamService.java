@@ -1,84 +1,86 @@
 package com.company.exam.service;
 
-import com.company.exam.dto.ExamDetailsInfo;
-import com.company.exam.dto.QuestionInfo;
-import com.company.exam.entity.Exam;
-import com.company.exam.entity.ExamDetails;
-import com.company.exam.entity.ExamGroup;
+import com.company.exam.dto.ExamDto;
+import com.company.exam.dto.request.CreateExamRequestDto;
+import com.company.exam.dto.request.UpdateExamRequestDto;
+import com.company.exam.dto.response.ExamResponseDto;
+import com.company.exam.entity.ExamEntity;
+import com.company.exam.error.exception.DuplicateExamTitleException;
 import com.company.exam.error.exception.NotFoundException;
-import com.company.exam.mapper.ExamDetailsMapper;
-import com.company.exam.repository.ExamDetailsRepository;
+import com.company.exam.mapper.ExamMapper;
 import com.company.exam.repository.ExamRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ExamService {
 
     private final ExamRepository examRepository;
-    private final ExamDetailsRepository examDetailsRepository;
-    private final ExamDetailsMapper examDetailsMapper;
-    private final ExamGroupService examGroupService;
-    private final QuestionService questionService;
+    private final ExamMapper examMapper;
 
-    public void addExam(ExamDetailsInfo request) {
-        ExamGroup examGroup = examGroupService.findByNameOrAddIfNotExist(request.getGroupName());
-        String examName = request.getExamName();
-        String duration = request.getDuration();
-        Integer questionCount = request.getQuestionCount();
-
-        ExamDetails examDetails = ExamDetails.builder()
-                .group(examGroup)
-                .examName(examName)
-                .duration(duration)
-                .questionCount(questionCount)
-                .build();
-
-        examDetailsRepository.save(examDetails);
-
-        Exam exam = Exam.builder()
-                .examDetails(examDetails)
-                .createdDate(LocalDate.now())
-                .updatedDate(LocalDate.now())
-                .build();
-
-        examRepository.save(exam);
+    public ExamDto getByTitle(String title) {
+        return examRepository.findByTitle(title)
+                .map(examMapper::toExamDto)
+                .orElseThrow(() -> new NotFoundException("Not found exam with given title: " + title));
     }
 
-    public ExamDetailsInfo getById(Integer id) {
-        Exam exam = examRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Not found exam by id: " + id));
-        return examDetailsMapper.toDto(exam.getExamDetails());
+    public ExamResponseDto getAll() {
+        List<ExamDto> examDtoList = examRepository.findAll().stream()
+                .map(examMapper::toExamDto)
+                .collect(Collectors.toList());
+        return ExamResponseDto.of(examDtoList);
     }
 
-    public void updateExam(Integer examId, ExamDetailsInfo request) {
-        Exam exam = examRepository.findById(examId)
-                .orElseThrow(() -> new NotFoundException("Not found exam by id: " + examId));
-        ExamDetails examDetails = exam.getExamDetails();
+    public void addExam(CreateExamRequestDto requestDto) {
+        String title = requestDto.getTitle();
+        Optional<ExamEntity> optionalExamEntity = examRepository.findByTitle(title);
 
-        examDetails.setGroup(examGroupService.findByNameOrAddIfNotExist(request.getGroupName()));
-        examDetails.setExamName(request.getExamName());
-        examDetails.setDuration(request.getDuration());
-        examDetails.setQuestionCount(request.getQuestionCount());
+        if (optionalExamEntity.isPresent()) {
+            throw new DuplicateExamTitleException(
+                    "There is already have an active exam with given title: " + title);
+        }
 
-        exam.setExamDetails(examDetailsRepository.save(examDetails));
-        exam.setUpdatedDate(LocalDate.now());
-        examRepository.save(exam);
+        ExamEntity examEntity = examMapper.toExamEntity(requestDto);
+        examRepository.save(examEntity);
+        log.info("Exam added to db with title: {}", requestDto.getTitle());
     }
 
-    public void deleteById(Integer id) {
-        Exam exam = examRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Not found exam by id: " + id));
-        Integer examDetailsId = exam.getExamDetails().getId();
-        examRepository.deleteById(id);
-        examDetailsRepository.deleteById(examDetailsId);
+
+    public void updateExam(String title, UpdateExamRequestDto requestDto) {
+        Optional<ExamEntity> optionalExamEntity = examRepository.findByTitle(title);
+
+        if (!optionalExamEntity.isPresent()) {
+            throw new NotFoundException("Not found exam with given title: " + title);
+        }
+
+        String newTitle = requestDto.getTitle();
+        if (!title.equals(newTitle)) {
+            Optional<ExamEntity> optionalExamEntityWithNewTitle =
+                    examRepository.findByTitle(newTitle);
+
+            if (optionalExamEntityWithNewTitle.isPresent()) {
+                throw new DuplicateExamTitleException(
+                        "There is already have an active exam with given title: " + title);
+            }
+        }
+
+        ExamEntity examEntity = optionalExamEntity.get();
+        examMapper.updateExamEntity(examEntity, requestDto);
+
+        examRepository.save(examEntity);
+        log.info("Exam updated with title: {} to new title: {}", title, newTitle);
     }
 
-    public List<QuestionInfo> getQuestionsByExamId(Integer examId) {
-        return questionService.getQuestionsByExamId(examId);
+    public void deleteByTitle(String title) {
+        examRepository.deleteByTitle(title);
+        log.info("Exam removed with title: {}", title);
     }
+
 }

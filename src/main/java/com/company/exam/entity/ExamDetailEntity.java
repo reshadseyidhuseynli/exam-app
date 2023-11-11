@@ -12,20 +12,21 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "exam_details")
-public class ExamDetails {
+@Table(name = "exam_detail")
+public class ExamDetailEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    @ManyToOne
-    @JoinColumn(name = "group_id")
-    private ExamGroup group;
-    @Column(name = "exam_name")
-    private String examName;
-    @Column(name = "duration")
+    private Long id;
+
+    @Column(name = "duration", nullable = false)
     private String duration;
-    @Column(name = "question_count")
+
+    @Column(name = "question_count", nullable = false)
     private Integer questionCount;
+
+    @ManyToOne
+    @JoinColumn(name = "group_id", referencedColumnName = "id")
+    private ExamGroupEntity group;
 
 }

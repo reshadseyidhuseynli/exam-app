@@ -1,43 +1,46 @@
 package com.company.exam.controller;
 
-import com.company.exam.dto.ExamDetailsInfo;
-import com.company.exam.dto.QuestionInfo;
+import com.company.exam.dto.ExamDto;
+import com.company.exam.dto.request.CreateExamRequestDto;
+import com.company.exam.dto.request.UpdateExamRequestDto;
+import com.company.exam.dto.response.ExamResponseDto;
 import com.company.exam.service.ExamService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/exam")
+@RequestMapping("/exams")
 @RequiredArgsConstructor
 public class ExamController {
 
     private final ExamService examService;
 
+    @GetMapping("/{title}")
+    public ExamDto getByTitle(@PathVariable("title") String title) {
+        return examService.getByTitle(title);
+    }
+
+    @GetMapping()
+    public ExamResponseDto getAll() {
+        return examService.getAll();
+    }
+
     @PostMapping
-    public void addExam(@RequestBody ExamDetailsInfo examDetails) {
-        examService.addExam(examDetails);
+    public void addExam(@Valid @RequestBody CreateExamRequestDto requestDto) {
+        examService.addExam(requestDto);
     }
 
-    @GetMapping("/{id}/details")
-    public ExamDetailsInfo getById(@PathVariable Integer id) {
-        return examService.getById(id);
+    @PutMapping("/{title}")
+    public void updateExam(@PathVariable String title,
+                           @Valid @RequestBody UpdateExamRequestDto requestDto) {
+        examService.updateExam(title, requestDto);
     }
 
-    @GetMapping("/{id}/questions")
-    public List<QuestionInfo> getQuestionsByExamId(@PathVariable Integer id) {
-        return examService.getQuestionsByExamId(id);
+    @DeleteMapping("/{title}")
+    public void deleteByTitle(@PathVariable String title) {
+        examService.deleteByTitle(title);
     }
 
-    @PutMapping("/{id}")
-    public void updateExam(@PathVariable Integer id,
-                           @RequestBody ExamDetailsInfo examDetails) {
-        examService.updateExam(id, examDetails);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable Integer id) {
-        examService.deleteById(id);
-    }
 }

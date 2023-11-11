@@ -1,7 +1,9 @@
 package com.company.exam.repository;
 
-import com.company.exam.entity.User;
+import com.company.exam.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
+@Repository
+public interface UserRepository extends JpaRepository<UserEntity, Long> {
 }
