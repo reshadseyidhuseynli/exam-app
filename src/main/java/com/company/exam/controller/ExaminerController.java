@@ -10,13 +10,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("exams")
+@RequestMapping("api/exams")
 @RequiredArgsConstructor
 public class ExaminerController {
 
     private final ExaminerService examinerService;
 
-    @PostMapping("register")
+    @PostMapping("/register")
     public void add(@RequestBody CreateExaminerRequestDto requestDto) {
         examinerService.add(requestDto);
     }

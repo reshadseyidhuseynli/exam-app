@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/questions")
+@RequestMapping("/api/questions")
 @RequiredArgsConstructor
 public class QuestionController {
 
