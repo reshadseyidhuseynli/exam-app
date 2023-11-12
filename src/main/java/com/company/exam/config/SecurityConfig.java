@@ -64,16 +64,17 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(
                         auth -> auth
-                                .antMatchers(HttpMethod.GET, "/api/exams/**").permitAll()
-                                .antMatchers("/api/exams/register").permitAll()
-                                .antMatchers("/api/exams/enter").permitAll()
-                                .antMatchers("/api/exams/{title}/start").permitAll()
-                                .antMatchers("/api/exams/finish").permitAll()
+                                .antMatchers("/api/v1/examiners/register").permitAll()
+                                .antMatchers("/api/v1/examiners/enter").permitAll()
+                                .antMatchers(HttpMethod.GET, "/api/v1/exams/**").permitAll()
+                                .antMatchers("/api/v1/exams/{title}/start").permitAll()
+                                .antMatchers("/api/v1/exams/finish").permitAll()
+                                .antMatchers("/api/v1/auth/signin").permitAll()
 
-                                .antMatchers(HttpMethod.POST, "/api/exams").hasAuthority("ADMIN")
-                                .antMatchers(HttpMethod.PUT, "/api/exams/{title}").hasAuthority("ADMIN")
-                                .antMatchers(HttpMethod.DELETE, "/api/exams/{title}").hasAuthority("ADMIN")
-                                .antMatchers(HttpMethod.POST, "/api/questions").hasAuthority("ADMIN")
+                                .antMatchers(HttpMethod.POST, "/api/v1/exams").hasAuthority("ADMIN")
+                                .antMatchers(HttpMethod.PUT, "/api/v1/exams/{title}").hasAuthority("ADMIN")
+                                .antMatchers(HttpMethod.DELETE, "/api/v1/exams/{title}").hasAuthority("ADMIN")
+                                .antMatchers(HttpMethod.POST, "/api/v1/questions").hasAuthority("ADMIN")
                 );
 
         http.authenticationProvider(authenticationProvider());

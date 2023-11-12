@@ -17,19 +17,19 @@ public class ResultEntity {
     @Column(name = "entrance_code", unique = true)
     private String entranceCode;
 
-    @Column(name = "correct_answer_count", nullable = false)
+    @Column(name = "correct_answer_count")
     private Integer correctAnswerCount;
 
-    @Column(name = "wrong_answer_count", nullable = false)
+    @Column(name = "wrong_answer_count")
     private Integer wrongAnswerCount;
 
-    @Column(name = "non_answer_count", nullable = false)
+    @Column(name = "non_answer_count")
     private Integer nonAnswerCount;
 
-    @Column(name = "exam_start_time", nullable = false)
+    @Column(name = "exam_start_time")
     private LocalDateTime examStartTime;
 
-    @Column(name = "exam_end_time", nullable = false)
+    @Column(name = "exam_end_time")
     private LocalDateTime examEndTime;
 
     @ManyToOne

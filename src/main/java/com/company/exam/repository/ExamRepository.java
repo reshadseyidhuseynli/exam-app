@@ -11,6 +11,4 @@ public interface ExamRepository extends JpaRepository<ExamEntity, Long> {
 
     Optional<ExamEntity> findByTitle(String title);
 
-    void deleteByTitle(String title);
-
 }

@@ -30,26 +30,22 @@ public class QuestionService {
                 .orElseThrow(() -> new NotFoundException("Exam not found with given title!"));
 
         QuestionEntity questionEntity = questionMapper.toQuestionEntity(requestDto);
-        examEntity.getQuestions().add(questionEntity);
         questionEntity.setExam(examEntity);
 
-        Integer maxNumber = questionRepository.findMaxNumberByExamId(examEntity.getId());
-        questionEntity.setNumber(maxNumber + 1);
+        if (examEntity.getQuestions().isEmpty()) {
+            questionEntity.setNumber(1);
+        } else {
+            Integer maxNumber = questionRepository.findMaxNumberByExamId(examEntity.getId());
+            questionEntity.setNumber(maxNumber + 1);
+        }
+        questionEntity.getOptions().forEach(optionEntity -> {
+            optionEntity.setQuestion(questionEntity);
+        });
+
+        examEntity.getQuestions().add(questionEntity);
 
         questionRepository.save(questionEntity);
         log.info("New question added for exam: {}", examTitle);
-    }
-
-    public QuestionResponseDto getRandomQuestion(Long examId, List<Integer> numbers) {
-        List<QuestionDto> questionEntities = getByExamIdAndNumberIn(examId, numbers)
-                .stream()
-                .map(questionMapper::toQuestionDto)
-                .collect(Collectors.toList());
-        return QuestionResponseDto.of(questionEntities);
-    }
-
-    public List<QuestionEntity> getByExamIdAndNumberIn(Long examId, List<Integer> numbers) {
-        return questionRepository.findByExamIdAndNumberIn(examId, numbers);
     }
 
 }

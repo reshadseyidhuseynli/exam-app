@@ -18,7 +18,8 @@ public class CreateQuestionRequestDto {
     @Data
     public static class Option {
 
-        private String optionText;
+        private Integer number;
+        private String text;
         private Boolean isRightAnswer;
 
     }
