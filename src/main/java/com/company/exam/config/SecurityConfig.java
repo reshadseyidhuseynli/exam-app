@@ -65,7 +65,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         auth -> auth
                                 .antMatchers("/api/v1/examiners/register").permitAll()
-                                .antMatchers("/api/v1/examiners/enter").permitAll()
+                                .antMatchers("/api/v1/examiners/entry").permitAll()
                                 .antMatchers(HttpMethod.GET, "/api/v1/exams/**").permitAll()
                                 .antMatchers("/api/v1/exams/{title}/start").permitAll()
                                 .antMatchers("/api/v1/exams/finish").permitAll()
